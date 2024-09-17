@@ -44,3 +44,35 @@ class Patient(Base):
     def find_by_id(session, patient_id):
         return session.query(Patient).get(patient_id)
     
+class Doctor(Base):
+    __tablename__ = 'doctors'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    specialty = Column(String)
+    appointments = relationship("Appointment", back_populates="doctor")
+
+    def __repr__(self):
+        return f"<Doctor(id={self.id}, name='{self.name}', specialty='{self.specialty}')>"
+
+    @staticmethod
+    def create(name, specialty):
+        return Doctor(name=name, specialty=specialty)
+
+    @staticmethod
+    def delete(session, doctor_id):
+        doctor = session.query(Doctor).get(doctor_id)
+        if doctor:
+            session.delete(doctor)
+            session.commit()
+        return doctor
+
+    @staticmethod
+    def get_all(session):
+        return session.query(Doctor).all()
+
+    @staticmethod
+    def find_by_id(session, doctor_id):
+        return session.query(Doctor).get(doctor_id)
+
+   
