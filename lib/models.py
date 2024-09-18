@@ -1,39 +1,59 @@
 import os
 import sys
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey,  DateTime
-from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import func
+from contextlib import contextmanager
+
+# Set up the path for importing modules
 sys.path.append(os.getcwd)
 
-
+# Database setup
 engine = create_engine('sqlite:///lib/hospital.db', echo=True)
 Session = sessionmaker(bind=engine)
-session = Session()
 Base = declarative_base()
+
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 class Patient(Base):
     __tablename__ = 'patients'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
+    name = Column(String(100), nullable=False)
     age = Column(Integer)
-    gender = Column(String)
-    appointments = relationship("Appointment", back_populates="patient")
+    gender = Column(String(10))
+    appointments = relationship("Appointment", back_populates="patient", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Patient(id={self.id}, name='{self.name}', age={self.age}, gender='{self.gender}')>"
 
     @staticmethod
     def create(name, age, gender):
+        if age < 0:
+            raise ValueError("Age must be a non-negative integer.")
+        if gender not in {'Male', 'Female', 'Other'}:
+            raise ValueError("Gender must be one of: Male, Female, Other.")
         return Patient(name=name, age=age, gender=gender)
 
     @staticmethod
     def delete(session, patient_id):
         patient = session.query(Patient).get(patient_id)
-        if patient:
-            session.delete(patient)
-            session.commit()
+        if patient is None:
+            raise ValueError(f"No patient found with id {patient_id}.")
+        session.delete(patient)
+        session.commit()
         return patient
 
     @staticmethod
@@ -43,14 +63,14 @@ class Patient(Base):
     @staticmethod
     def find_by_id(session, patient_id):
         return session.query(Patient).get(patient_id)
-    
+
 class Doctor(Base):
     __tablename__ = 'doctors'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    specialty = Column(String)
-    appointments = relationship("Appointment", back_populates="doctor")
+    name = Column(String(100), nullable=False)
+    specialty = Column(String(100))
+    appointments = relationship("Appointment", back_populates="doctor", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Doctor(id={self.id}, name='{self.name}', specialty='{self.specialty}')>"
@@ -62,9 +82,10 @@ class Doctor(Base):
     @staticmethod
     def delete(session, doctor_id):
         doctor = session.query(Doctor).get(doctor_id)
-        if doctor:
-            session.delete(doctor)
-            session.commit()
+        if doctor is None:
+            raise ValueError(f"No doctor found with id {doctor_id}.")
+        session.delete(doctor)
+        session.commit()
         return doctor
 
     @staticmethod
@@ -96,9 +117,10 @@ class Appointment(Base):
     @staticmethod
     def delete(session, appointment_id):
         appointment = session.query(Appointment).get(appointment_id)
-        if appointment:
-            session.delete(appointment)
-            session.commit()
+        if appointment is None:
+            raise ValueError(f"No appointment found with id {appointment_id}.")
+        session.delete(appointment)
+        session.commit()
         return appointment
 
     @staticmethod
@@ -107,4 +129,7 @@ class Appointment(Base):
 
     @staticmethod
     def find_by_id(session, appointment_id):
-        return session.query(Appointment).get(appointment_id)  
+        return session.query(Appointment).get(appointment_id)
+
+
+Base.metadata.create_all(engine)
