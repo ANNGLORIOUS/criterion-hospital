@@ -14,6 +14,13 @@ from helpers import (
 )
 
 def main():
+    print("\n")
+    print("==================================")
+    print("          CRITERION HOSPTAL       ")
+    print("    (c) 2024. All rights reserved.")
+    print("==================================")
+
+    
     while True:
         menu()
         choice = input("> ")
@@ -48,16 +55,29 @@ def main():
             print("Invalid choice")
 
 def menu():
+    print("\033[31m=====CRITERION HOSPITAL =====\033[0m")
     print("Please select an option:")
     print("0. Exit the program")
+    print("\n")
+    print("PATIENT'S RECORDS")
+    print("......")
+    print("\n")
     print("1. Create a patient")
     print("2. Delete a patient")
     print("3. List all patients")
     print("4. View patient details")
+    print("\n")
+    print("DOCTOR'S RECORDS")
+    print("......")
+    print("\n")
     print("5. Create a doctor")
     print("6. Delete a doctor")
     print("7. List all doctors")
     print("8. View doctor details")
+    print("\n")
+    print("APPOINTMENT'S RECORDS")
+    print("......")
+    print("\n")
     print("9. Create an appointment")
     print("10. Delete an appointment")
     print("11. List all appointments")
