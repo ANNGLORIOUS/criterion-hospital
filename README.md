@@ -42,6 +42,21 @@ Appointments
 - Organize code into functions for readability and maintainability.
 - Utilize classes for data models (Patient, Doctor, Appointment).
 
+#### The cli command
+    • 0: Exit the program
+    • 1: Create a patient
+    • 2: Delete a patient
+    • 3: List all patients
+    • 4: View patient details
+    • 5: Create a doctor
+    • 6: Delete a doctor
+    • 7: List all doctors
+    • 8: View doctor details
+    • 9: Create an appointment
+    • 10: Delete an appointment
+    • 11: List all appointments
+    • 12: View appointment details
+
 
 ## Setup/Installation Requirements
 * One would need either linux or wsl for window users
