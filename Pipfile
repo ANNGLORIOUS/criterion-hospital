@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 alembic = "*"
 sqlalchemy = "*"
+prettytable = "*"
+tabulate = "*"
 
 [dev-packages]
 

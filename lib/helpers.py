@@ -4,6 +4,7 @@ from models import Patient
 from models import Doctor
 from models import Appointment
 from datetime import datetime
+from tabulate import tabulate # type: ignore
 
 DATABASE_URL = 'sqlite:///hospital.db'
 engine = create_engine(DATABASE_URL)
@@ -29,8 +30,15 @@ def delete_patient():
 
 def list_patients():
     patients = Patient.get_all(session)
+    if len(patients) == 0:
+        print("No patients found.")
+        return
+    
+    headers = ["id", "name", "age", "gender"]
+    data = []
     for patient in patients:
-        print(patient)
+        data.append([patient.id, patient.name, patient.age, patient.gender])
+    print(tabulate(data, headers=headers,tablefmt="grid"))
 
 def view_patient():
     patient_id = int(input("Enter patient ID to view: "))
@@ -58,8 +66,16 @@ def delete_doctor():
 
 def list_doctors():
     doctors = Doctor.get_all(session)
+    if len(doctors) == 0:
+        print("No doctors found.")
+        return
+    
+    headers = ["id", "name", "specialty"]
+    data = []
+
     for doctor in doctors:
-        print(doctor)
+        data.append([doctor.id, doctor.name, doctor.specialty])
+    print(tabulate(data, headers=headers, tablefmt="grid"))
 
 def view_doctor():
     doctor_id = int(input("Enter doctor ID to view: "))
@@ -89,8 +105,15 @@ def delete_appointment():
 
 def list_appointments():
     appointments = Appointment.get_all(session)
+    if len(appointments) == 0:
+        print("No appointments found.")
+        return
+    
+    headers = ["id", "patient_id", "doctor_id", "date"]
+    data = []
     for appointment in appointments:
-        print(appointment)
+        data.append([appointment.id, appointment.patient_id, appointment.doctor_id, appointment.date])
+    print(tabulate(data, headers=headers, tablefmt="grid"))
 
 def view_appointment():
     appointment_id = int(input("Enter appointment ID to view: "))
