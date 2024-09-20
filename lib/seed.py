@@ -15,7 +15,7 @@ def seed():
     from models import Base
     Base.metadata.create_all(engine)
     
-    # Add sample data
+    # Seed data
     if not session.query(Patient).first():
         patient1 = Patient.create("John Mwangi", 30, "Male")
         patient2 = Patient.create("Jane Smith", 25, "Female")
